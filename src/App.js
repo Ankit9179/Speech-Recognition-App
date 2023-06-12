@@ -1,24 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+import SpeechRecognition, {
+  useSpeechRecognition,
+} from "react-speech-recognition";
+
+import useClipboard from "react-use-clipboard"; //
 
 function App() {
+  const [text, setText] = useState();
+
+  const [isCopied, setCopied] = useClipboard(text); //
+
+  const startListening = () =>
+    SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
+
+  const { transcript, browserSupportsSpeechRecognition } =
+    useSpeechRecognition();
+
+  if (!browserSupportsSpeechRecognition) {
+    return null;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <div className="container">
+        <h1>Speech to text converter</h1>
+        <p>Convert spoken audio into text</p>
+
+        <div className="main-container" onClick={() => setText(transcript)}>
+          {transcript}
+        </div>
+        <p>please hit this box before copying to text👆</p>
+        <div className="btns">
+          <button onClick={setCopied}>
+            {isCopied ? "copied" : "Copy to clipboard"}
+          </button>
+
+          <button onClick={startListening}>Start listening</button>
+          <button onClick={SpeechRecognition.stopListening}>
+            Stope listening
+          </button>
+        </div>
+      </div>
+    </>
   );
 }
 
